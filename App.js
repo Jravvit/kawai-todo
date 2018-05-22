@@ -1,42 +1,88 @@
 import React from 'react';
 import { StyleSheet, Text, View, StatusBar, TextInput, Dimensions,Platform,ScrollView } from 'react-native';
 import Todo from './Todo.js';
+import {AppLoading} from 'expo';
+import uuidv1 from 'uuid/v1';
 
 const {height,width} = Dimensions.get('window')
 
 export default class App extends React.Component {
   state ={
-    newTodo: ""
+    newToDo: "",
+    loadedToDos: false,
   };
 
+  componentDidMount = () => {
+    this._loadToDos();
+  }
   render() {
-    const { newTodo } = this.state;
+    const { newToDo, loadedToDos } = this.state;
+    if(!loadedToDos) {
+      return(
+        <AppLoading />
+        )
+    }
+
     return (
       <View style={styles.container}>
         <StatusBar barStyle="light-content" />
         <Text style={styles.title}>Kaw ai To Do</Text>
         <View style={styles.card}>
             <TextInput style={styles.input} 
-            placeholder={"New To Do"} 
-            value={newTodo} 
-            onChangeText={this._controllNewTodo} 
-            placeholderTextColor={"#999"}
-            returnKeyType={"done"}
-            autoCorrect={false}
+              placeholder={"New To Do"} 
+              value={newToDo} 
+              onChangeText={this._controllNewTodo} 
+              placeholderTextColor={"#999"}
+              returnKeyType={"done"}
+              autoCorrect={false}
+              onSubmitEditing={this._addToDo}
             />
             <ScrollView contentContainerStyle={styles.toDos}>
-              <Todo />
+              <Todo text={"Hello"}/>
             </ScrollView>
         </View>
 
       </View>
     );
+  
   }
 
   _controllNewTodo = text => {
     this.setState({
-      newTodo: text
+      newToDo: text
     })
+  }
+
+  _loadToDos = () => {
+    this.setState({
+      loadedToDos: true
+    })
+  }
+
+  _addToDo = () => {
+    const {newToDo} = this.state;
+    if(newToDo !== "") {
+      this.setState(prevState => {
+        const ID = uuidv1();
+        const newToDoObject = {
+          [ID]: {
+            id: ID,
+            isCompleted: false,
+            text: newToDo,
+            createdAt: Date.now()
+          }
+        };
+        const newState = {
+          ...prevState,
+          newToDo: "",
+          toDos: {
+            ...prevState.toDos,
+            ...newToDoObject
+          }
+        }
+        return {...newState}
+      })
+    }
   }
 }
 
