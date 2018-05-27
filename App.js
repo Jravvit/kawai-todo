@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, StatusBar, TextInput, Dimensions,Platform,Scrol
 import Todo from './Todo.js';
 import {AppLoading} from 'expo';
 import uuidv1 from 'uuid/v1';
+import PropTypes from "prop-types";
 
 const {height,width} = Dimensions.get('window')
 
@@ -39,7 +40,7 @@ export default class App extends React.Component {
               onSubmitEditing={this._addToDo}
             />
             <ScrollView contentContainerStyle={styles.toDos}>
-              {Object.values(toDos).map(toDo => <Todo key={toDo.id} {...toDo} />)}
+              {Object.values(toDos).map(toDo => <Todo key={toDo.id} {...toDo} deleteToDo={this._deleteTodo}/>)}
             </ScrollView>
         </View>
 
@@ -84,6 +85,18 @@ export default class App extends React.Component {
         return {...newState}
       })
     }
+  }
+  _deleteTodo = (id) => {
+    this.setState(prevState => {
+      const toDos = prevState.toDos;
+      delete toDos[id];
+      const newState = {
+        ...prevState,
+        ...toDos
+      }
+
+      return {...newState}
+    })
   }
 }
 
