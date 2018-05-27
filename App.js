@@ -10,13 +10,14 @@ export default class App extends React.Component {
   state ={
     newToDo: "",
     loadedToDos: false,
+    toDos: {}
   };
 
   componentDidMount = () => {
     this._loadToDos();
   }
   render() {
-    const { newToDo, loadedToDos } = this.state;
+    const { newToDo, loadedToDos,toDos } = this.state;
     if(!loadedToDos) {
       return(
         <AppLoading />
@@ -38,7 +39,7 @@ export default class App extends React.Component {
               onSubmitEditing={this._addToDo}
             />
             <ScrollView contentContainerStyle={styles.toDos}>
-              <Todo text={"Hello"}/>
+              {Object.values(toDos).map(toDo => <Todo key={toDo.id} {...toDo} />)}
             </ScrollView>
         </View>
 
